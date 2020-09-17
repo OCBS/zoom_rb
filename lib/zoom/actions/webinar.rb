@@ -8,7 +8,8 @@ module Zoom
       SETTINGS_KEYS = %i[panelists_video practice_session hd_video approval_type
                          registration_type audio auto_recording enforce_login
                          enforce_login_domains alternative_hosts close_registration
-                         show_share_button allow_multiple_devices registrants_confirmation_email].freeze
+                         show_share_button allow_multiple_devices registrants_confirmation_email
+                         registrants_email_notification].freeze
       def webinar_list(*args)
         params = Zoom::Params.new(Utils.extract_options!(args))
         params.require(:host_id).permit(:page_size, :page_number)
@@ -54,27 +55,27 @@ module Zoom
       end
 
       def webinar_panelists_list(*args)
-        # TODO: implement webinar_panelists_list
-        # params = Zoom::Params.new(Utils.extract_options!(args))
-        raise Zoom::NotImplemented, 'webinar_panelists_list is not yet implemented'
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id)
+        Utils.parse_response self.class.get("/webinars/#{params[:id]}/panelists", headers: request_headers)
       end
 
       def webinar_panelist_add(*args)
-        # TODO: implement webinar_panelist_add
-        # params = Zoom::Params.new(Utils.extract_options!(args))
-        raise Zoom::NotImplemented, 'webinar_panelist_add is not yet implemented'
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id).permit(panelists: [])
+        Utils.parse_response self.class.post("/webinars/#{params[:id]}/panelists", body: params.except(:id).to_json, query: params, headers: request_headers)
       end
 
       def webinar_panelists_delete_all(*args)
-        # TODO: implement webinar_panelists_delete_all
-        # params = Zoom::Params.new(Utils.extract_options!(args))
-        raise Zoom::NotImplemented, 'webinar_panelists_delete_all is not yet implemented'
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id)
+        Utils.parse_response self.class.delete("/webinars/#{params[:id]}/panelists", headers: request_headers)
       end
 
       def webinar_panelist_delete(*args)
-        # TODO: implement webinar_panelist_delete
-        # params = Zoom::Params.new(Utils.extract_options!(args))
-        raise Zoom::NotImplemented, 'webinar_panelist_delete is not yet implemented'
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id, :panelist_id)
+        Utils.parse_response self.class.delete("/webinars/#{params[:id]}/panelists/#{params[:panelist_id]}", headers: request_headers)
       end
 
       def webinar_registrants_list(*args)
