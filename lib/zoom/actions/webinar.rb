@@ -100,6 +100,12 @@ module Zoom
         Utils.parse_response self.class.put("/webinars/#{params[:id]}/registrants/status", body: params.except(:id, :occurrence_ids).to_json, query: params.slice(:occurrence_ids), headers: request_headers)
       end
 
+      def webinar_absentees_list(*args)
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id).permit(%i[occurrence_id page_size next_page_token])
+        Utils.parse_response self.class.get("/webinars/#{params[:id]}/absentees", query: params.except(:id), headers: request_headers)
+      end
+
       def past_webinar_list(*args)
         params = Zoom::Params.new(Utils.extract_options!(args))
         params.require(:id)
