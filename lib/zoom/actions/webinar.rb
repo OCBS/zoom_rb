@@ -49,9 +49,9 @@ module Zoom
       end
 
       def webinar_status_update(*args)
-        # TODO: implement webinar_panelists_list
-        # params = Zoom::Params.new(Utils.extract_options!(args))
-        raise Zoom::NotImplemented, 'webinar_status_update is not yet implemented'
+        params = Zoom::Params.new(Utils.extract_options!(args))
+        params.require(:id, :action)
+        Utils.parse_response self.class.put("/webinars/#{params[:id]}/status", body: params.except(:id).to_json, headers: request_headers)
       end
 
       def webinar_panelists_list(*args)
@@ -103,7 +103,7 @@ module Zoom
       def webinar_absentees_list(*args)
         params = Zoom::Params.new(Utils.extract_options!(args))
         params.require(:id).permit(%i[occurrence_id page_size next_page_token])
-        Utils.parse_response self.class.get("/webinars/#{params[:id]}/absentees", query: params.except(:id), headers: request_headers)
+        Utils.parse_response self.class.get("/past_webinars/#{params[:id]}/absentees", query: params.except(:id), headers: request_headers)
       end
 
       def past_webinar_list(*args)
